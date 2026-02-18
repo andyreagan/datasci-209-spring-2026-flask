@@ -1,0 +1,835 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quiz 3: Pick the Right Temporal Idiom</title>
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-dark: #0f0e17;
+            --bg-card: #1a1825;
+            --bg-card-hover: #232136;
+            --accent-primary: #ff8906;
+            --accent-secondary: #f25f4c;
+            --accent-tertiary: #e53170;
+            --accent-success: #3da942;
+            --accent-info: #7f5af0;
+            --text-primary: #fffffe;
+            --text-secondary: #a7a9be;
+            --text-muted: #6c6f85;
+            --border: #2e2b3d;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'IBM Plex Sans', sans-serif;
+            background: var(--bg-dark);
+            color: var(--text-primary);
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 2rem;
+            padding-bottom: 1.5rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        h1 {
+            font-size: 2.2rem;
+            font-weight: 700;
+            margin-bottom: 0.4rem;
+            background: linear-gradient(135deg, var(--accent-primary), var(--accent-tertiary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .subtitle { color: var(--text-secondary); font-size: 1rem; }
+
+        /* Name input */
+        .name-input-section {
+            background: var(--bg-card);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            border: 2px solid var(--accent-primary);
+        }
+
+        .name-input-section label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: var(--accent-primary);
+        }
+
+        .name-input-section input {
+            width: 100%;
+            max-width: 400px;
+            padding: 0.75rem 1rem;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+            background: var(--bg-card-hover);
+            color: var(--text-primary);
+            font-family: inherit;
+            font-size: 1rem;
+        }
+
+        .name-input-section input:focus {
+            outline: none;
+            border-color: var(--accent-primary);
+        }
+
+        /* Idiom reference */
+        .idiom-ref {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            gap: 0.6rem;
+            margin-bottom: 2rem;
+            padding: 1rem;
+            background: var(--bg-card);
+            border-radius: 12px;
+            border: 1px solid var(--border);
+        }
+
+        .idiom-chip {
+            padding: 0.5rem 0.6rem;
+            border-radius: 8px;
+            font-size: 0.72rem;
+            font-weight: 500;
+            background: rgba(127, 90, 240, 0.1);
+            color: var(--accent-info);
+            border: 1px solid rgba(127, 90, 240, 0.2);
+            text-align: center;
+            cursor: help;
+            transition: all 0.2s;
+        }
+
+        .idiom-chip:hover {
+            background: rgba(127, 90, 240, 0.2);
+            transform: translateY(-2px);
+        }
+
+        .idiom-chip .idiom-name {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 2px;
+        }
+
+        .idiom-chip .idiom-use {
+            font-size: 0.65rem;
+            color: var(--text-muted);
+            font-weight: 400;
+        }
+
+        /* Progress bar */
+        .progress-container {
+            margin-bottom: 1.5rem;
+        }
+
+        .progress-bar {
+            height: 6px;
+            background: var(--border);
+            border-radius: 3px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--accent-primary), var(--accent-tertiary));
+            border-radius: 3px;
+            transition: width 0.4s ease;
+        }
+
+        .progress-text {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            margin-top: 0.4rem;
+            text-align: right;
+        }
+
+        /* Scenario card */
+        .scenario-card {
+            background: var(--bg-card);
+            border-radius: 16px;
+            padding: 1.75rem;
+            border: 1px solid var(--border);
+            margin-bottom: 1.5rem;
+        }
+
+        .scenario-header {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin-bottom: 1rem;
+        }
+
+        .scenario-num {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 1rem;
+        }
+
+        .scenario-title {
+            font-size: 1.15rem;
+            font-weight: 600;
+        }
+
+        .scenario-context {
+            background: rgba(255, 137, 6, 0.08);
+            border-left: 3px solid var(--accent-primary);
+            padding: 1rem 1.25rem;
+            border-radius: 0 8px 8px 0;
+            margin-bottom: 1.25rem;
+        }
+
+        .scenario-context p {
+            font-size: 0.95rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .scenario-context p:last-child { margin-bottom: 0; }
+
+        .task-label {
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: 0.8rem;
+            color: var(--accent-primary);
+            font-weight: 500;
+        }
+
+        /* Options grid */
+        .options-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 0.75rem;
+            margin-bottom: 1rem;
+        }
+
+        @media (max-width: 600px) {
+            .options-grid { grid-template-columns: 1fr; }
+        }
+
+        .option-btn {
+            background: var(--bg-card-hover);
+            border: 2px solid var(--border);
+            border-radius: 10px;
+            padding: 1rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-align: left;
+        }
+
+        .option-btn:hover:not(.selected):not(.correct):not(.incorrect) {
+            border-color: var(--accent-info);
+            transform: translateY(-2px);
+        }
+
+        .option-btn.selected {
+            border-color: var(--accent-info);
+            background: rgba(127, 90, 240, 0.15);
+        }
+
+        .option-btn.correct {
+            border-color: var(--accent-success);
+            background: rgba(61, 169, 66, 0.15);
+        }
+
+        .option-btn.incorrect {
+            border-color: var(--accent-secondary);
+            background: rgba(242, 95, 76, 0.1);
+            opacity: 0.7;
+        }
+
+        .option-btn .opt-name {
+            font-weight: 600;
+            font-size: 0.95rem;
+            margin-bottom: 0.25rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .option-btn .opt-desc {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+        }
+
+        .opt-icon {
+            font-size: 1.1rem;
+        }
+
+        /* Feedback */
+        .feedback {
+            display: none;
+            padding: 1rem 1.25rem;
+            border-radius: 10px;
+            margin-top: 1rem;
+            font-size: 0.9rem;
+        }
+
+        .feedback.show { display: block; animation: fadeIn 0.3s ease; }
+
+        .feedback.correct-feedback {
+            background: rgba(61, 169, 66, 0.12);
+            border: 1px solid rgba(61, 169, 66, 0.3);
+        }
+
+        .feedback.incorrect-feedback {
+            background: rgba(242, 95, 76, 0.12);
+            border: 1px solid rgba(242, 95, 76, 0.3);
+        }
+
+        .feedback-title {
+            font-weight: 600;
+            margin-bottom: 0.4rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .feedback.correct-feedback .feedback-title { color: var(--accent-success); }
+        .feedback.incorrect-feedback .feedback-title { color: var(--accent-secondary); }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-8px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Navigation */
+        .nav-btns {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 1.5rem;
+        }
+
+        .nav-btn {
+            background: var(--bg-card-hover);
+            color: var(--text-primary);
+            border: 1px solid var(--border);
+            padding: 0.7rem 1.5rem;
+            border-radius: 8px;
+            cursor: pointer;
+            font-family: inherit;
+            font-size: 0.9rem;
+            font-weight: 500;
+            transition: all 0.2s;
+        }
+
+        .nav-btn:hover:not(:disabled) {
+            background: var(--accent-info);
+            border-color: var(--accent-info);
+        }
+
+        .nav-btn:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+        }
+
+        .nav-btn.primary {
+            background: var(--accent-primary);
+            border-color: var(--accent-primary);
+        }
+
+        .nav-btn.primary:hover:not(:disabled) {
+            background: var(--accent-secondary);
+            border-color: var(--accent-secondary);
+        }
+
+        /* Results */
+        .results-card {
+            background: var(--bg-card);
+            border-radius: 16px;
+            padding: 2rem;
+            border: 1px solid var(--border);
+            text-align: center;
+            display: none;
+        }
+
+        .results-card.show { display: block; }
+
+        .results-score {
+            font-size: 4rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--accent-primary), var(--accent-tertiary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .results-label {
+            font-size: 1.1rem;
+            color: var(--text-secondary);
+            margin-bottom: 1.5rem;
+        }
+
+        .results-breakdown {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-top: 1.5rem;
+            text-align: left;
+        }
+
+        .breakdown-item {
+            background: var(--bg-card-hover);
+            padding: 1rem;
+            border-radius: 10px;
+        }
+
+        .breakdown-item .q-num {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .breakdown-item .q-answer {
+            font-weight: 600;
+            margin-top: 0.25rem;
+        }
+
+        .breakdown-item.was-correct .q-answer { color: var(--accent-success); }
+        .breakdown-item.was-incorrect .q-answer { color: var(--accent-secondary); }
+
+        /* Navigation links */
+        .nav-links {
+            margin-top: 2rem;
+            text-align: center;
+        }
+
+        .nav-links a {
+            color: var(--accent-info);
+            text-decoration: none;
+            margin: 0 1rem;
+        }
+
+        .nav-links a:hover {
+            text-decoration: underline;
+        }
+
+        /* Key concepts box */
+        .concepts-box {
+            background: var(--bg-card);
+            border-radius: 12px;
+            padding: 1.25rem;
+            margin-top: 2rem;
+            border: 1px solid var(--border);
+        }
+
+        .concepts-box h3 {
+            font-size: 0.9rem;
+            color: var(--accent-primary);
+            margin-bottom: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .concept-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 0.75rem;
+        }
+
+        .concept-item {
+            font-size: 0.85rem;
+            padding: 0.6rem 0.8rem;
+            background: var(--bg-card-hover);
+            border-radius: 6px;
+        }
+
+        .concept-item strong {
+            color: var(--accent-info);
+        }
+
+        footer {
+            text-align: center;
+            padding: 2rem;
+            color: var(--text-muted);
+            font-size: 0.8rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Quiz 3: Pick the Right Temporal Idiom</h1>
+            <p class="subtitle">Week 7 - Match the visualization to the task</p>
+        </header>
+
+        <!-- Name Input -->
+        <div class="name-input-section">
+            <label for="playerName">Enter Your Name:</label>
+            <input type="text" id="playerName" placeholder="Your name..." required>
+        </div>
+
+        <!-- Idiom Reference -->
+        <div class="idiom-ref">
+            <div class="idiom-chip">
+                <span class="idiom-name">Line Chart</span>
+                <span class="idiom-use">Trends over time</span>
+            </div>
+            <div class="idiom-chip">
+                <span class="idiom-name">Stacked Area</span>
+                <span class="idiom-use">Part-to-whole + trends</span>
+            </div>
+            <div class="idiom-chip">
+                <span class="idiom-name">Streamgraph</span>
+                <span class="idiom-use">Many categories, flow</span>
+            </div>
+            <div class="idiom-chip">
+                <span class="idiom-name">Horizon Chart</span>
+                <span class="idiom-use">Many series, small space</span>
+            </div>
+            <div class="idiom-chip">
+                <span class="idiom-name">Calendar View</span>
+                <span class="idiom-use">Daily patterns, cycles</span>
+            </div>
+            <div class="idiom-chip">
+                <span class="idiom-name">Gantt Chart</span>
+                <span class="idiom-use">Durations, dependencies</span>
+            </div>
+            <div class="idiom-chip">
+                <span class="idiom-name">Slopegraph</span>
+                <span class="idiom-use">Before/after change</span>
+            </div>
+            <div class="idiom-chip">
+                <span class="idiom-name">Connected Scatter</span>
+                <span class="idiom-use">Two values + time</span>
+            </div>
+        </div>
+
+        <!-- Progress -->
+        <div class="progress-container">
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressFill" style="width: 0%"></div>
+            </div>
+            <div class="progress-text" id="progressText">Question 1 of 5</div>
+        </div>
+
+        <!-- Scenario Card (dynamic) -->
+        <div class="scenario-card" id="scenarioCard">
+            <!-- Content populated by JS -->
+        </div>
+
+        <!-- Results Card (hidden until complete) -->
+        <div class="results-card" id="resultsCard">
+            <div class="results-score" id="resultsScore">0/5</div>
+            <div class="results-label">Correct answers</div>
+            <div class="results-breakdown" id="resultsBreakdown"></div>
+            <button class="nav-btn primary" style="margin-top:1.5rem;" onclick="restartQuiz()">Try Again</button>
+        </div>
+
+        <div class="nav-links">
+            <a href="/quiz1">Quiz 1: Idiom Matchmaker</a>
+            <a href="/quiz2">Quiz 2: Chart Decoder</a>
+            <a href="/scoreboard">View Scoreboard</a>
+        </div>
+
+        <!-- Key Concepts -->
+        <div class="concepts-box">
+            <h3>Key Concepts from This Week</h3>
+            <div class="concept-grid">
+                <div class="concept-item">
+                    <strong>Connection marks</strong> emphasize ordering - they show the relationship between one item and the next.
+                </div>
+                <div class="concept-item">
+                    <strong>Granularity</strong>: year/month/day vs. year/month/day/hour. Truncate or use dateparts for aggregation.
+                </div>
+                <div class="concept-item">
+                    <strong>Aspect ratio matters:</strong> "Banking to 45 degrees" - slopes near 45 degrees are most accurately perceived.
+                </div>
+                <div class="concept-item">
+                    <strong>Indexed line charts</strong> show change over time using a normalized baseline (e.g., 100 = start).
+                </div>
+                <div class="concept-item">
+                    <strong>Radial layouts</strong> appeal to cyclical time (hours, seasons) but sacrifice precision.
+                </div>
+                <div class="concept-item">
+                    <strong>Horizon charts</strong> compress vertical space by layering bands - great for many series.
+                </div>
+            </div>
+        </div>
+
+        <footer>W209 Information Visualization - UC Berkeley MIDS</footer>
+    </div>
+
+    <script>
+        const scenarios = [
+            {
+                title: "Stock Price Comparison",
+                context: "A financial analyst wants to <strong>compare the performance of 4 tech stocks</strong> (Apple, Google, Microsoft, Amazon) over the past year. The goal is to see which stock grew the most <em>relative to its starting price</em>.",
+                task: "Compare trends, normalized change",
+                options: [
+                    { name: "Multi-line Chart", desc: "Multiple lines on same axes, raw prices", icon: "" },
+                    { name: "Indexed Line Chart", desc: "Normalize all to 100 at start date", icon: "", correct: true },
+                    { name: "Stacked Area Chart", desc: "Show cumulative total over time", icon: "" },
+                    { name: "Slopegraph", desc: "Before/after comparison only", icon: "" }
+                ],
+                explanation: "<strong>Indexed Line Chart</strong> is best here. Raw prices are misleading because a stock at $3000 (Google) looks \"higher\" than one at $150 (Apple) even if Apple grew more. Indexing normalizes all stocks to 100 at the start, so a line at 140 means +40% regardless of actual price. This directly answers \"which grew most?\"",
+                wrongExplanation: "A raw multi-line chart would work for absolute values, but makes relative growth comparison nearly impossible when stocks have vastly different price scales."
+            },
+            {
+                title: "Music Streaming Trends",
+                context: "Spotify wants to visualize <strong>how listening share has shifted across 15 genres</strong> over the past decade. The goal is to show the organic \"flow\" of attention - which genres rose, which fell, and how the overall landscape evolved.",
+                task: "Part-to-whole over time, many categories, engage/enjoy",
+                options: [
+                    { name: "Line Chart (15 lines)", desc: "One line per genre", icon: "" },
+                    { name: "Stacked Area Chart", desc: "Genres stacked, total = 100%", icon: "" },
+                    { name: "Streamgraph", desc: "Flowing river of genres", icon: "", correct: true },
+                    { name: "Small Multiples", desc: "15 separate mini line charts", icon: "" }
+                ],
+                explanation: "<strong>Streamgraph</strong> is ideal for this \"enjoy\" + part-to-whole task with many categories. It emphasizes horizontal continuity and organic flow - perfect for showing how genres rise and fall over a decade. The aesthetic appeal supports engagement (a journalism or marketing use case).",
+                wrongExplanation: "Stacked area would work for precision but feels static. 15 overlapping lines would be unreadable. Small multiples lose the part-to-whole relationship."
+            },
+            {
+                title: "Server Monitoring Dashboard",
+                context: "A DevOps team monitors <strong>CPU usage across 50 servers</strong> over the past 24 hours. They need to quickly <strong>spot anomalies</strong> (servers spiking or flatlined) in a compact dashboard view.",
+                task: "Compare many time series, detect outliers, space-constrained",
+                options: [
+                    { name: "50 Sparklines", desc: "Tiny line charts in a table", icon: "" },
+                    { name: "Horizon Chart", desc: "Layered bands, very compact", icon: "", correct: true },
+                    { name: "Heatmap (servers x time)", desc: "Color encodes CPU %", icon: "" },
+                    { name: "Single Line Chart", desc: "Average CPU across all servers", icon: "" }
+                ],
+                explanation: "<strong>Horizon Chart</strong> is purpose-built for this: comparing many time series in limited vertical space. It layers bands (folding the chart) so 50 series can fit in a compact dashboard while still showing individual trends. Outliers pop out as bright red bands.",
+                wrongExplanation: "Sparklines work but waste space. A heatmap loses trend shape. A single averaged line hides individual server anomalies entirely - dangerous for monitoring."
+            },
+            {
+                title: "Project Management Timeline",
+                context: "A PM needs to visualize a <strong>software release schedule</strong>: 12 tasks with start dates, end dates, and dependencies. The team needs to see <strong>which tasks overlap</strong> and identify the critical path.",
+                task: "Show durations, start/end times, dependencies",
+                options: [
+                    { name: "Line Chart", desc: "Progress over time", icon: "" },
+                    { name: "Gantt Chart", desc: "Bars showing task durations", icon: "", correct: true },
+                    { name: "Calendar View", desc: "Daily grid with task markers", icon: "" },
+                    { name: "Stacked Bar Chart", desc: "Tasks stacked by phase", icon: "" }
+                ],
+                explanation: "<strong>Gantt Chart</strong> is the canonical idiom for project timelines. It uses horizontal bars to show duration (start to end), vertical alignment to show overlap, and can add dependency arrows. No other idiom handles this task/data combination as well.",
+                wrongExplanation: "Line charts don't show durations. Calendar views lose the continuous timeline. Stacked bars imply part-to-whole, not dependencies."
+            },
+            {
+                title: "Gym Attendance Patterns",
+                context: "A gym owner wants to understand <strong>attendance patterns by day of week and time of year</strong>. Are weekends busier? Does attendance drop in summer? They want to see <strong>cyclical patterns</strong> at a glance.",
+                task: "Identify cycles/seasonality, daily patterns",
+                options: [
+                    { name: "Line Chart (daily)", desc: "365 days of attendance", icon: "" },
+                    { name: "Calendar View", desc: "Color-coded daily grid", icon: "", correct: true },
+                    { name: "Radial/Spiral Chart", desc: "Circular time layout", icon: "" },
+                    { name: "Bar Chart by Month", desc: "12 bars, one per month", icon: "" }
+                ],
+                explanation: "<strong>Calendar View</strong> is perfect for spotting day-of-week and seasonal patterns. The familiar grid layout (weekdays as columns, weeks as rows) leverages existing mental models. Color intensity shows attendance, so weekend vs. weekday patterns pop out immediately.",
+                wrongExplanation: "A 365-day line chart would be noisy and obscure weekly cycles. Radial charts look cool for cycles but sacrifice precision. Monthly bars hide daily variation entirely."
+            }
+        ];
+
+        let currentQuestion = 0;
+        let answers = [];
+        let selectedOption = null;
+        let answered = false;
+
+        function renderScenario() {
+            const scenario = scenarios[currentQuestion];
+            const card = document.getElementById('scenarioCard');
+
+            let optionsHTML = scenario.options.map((opt, i) => `
+                <button class="option-btn" onclick="selectOption(${i})" id="opt-${i}">
+                    <div class="opt-name">${opt.icon ? '<span class="opt-icon">' + opt.icon + '</span>' : ''} ${opt.name}</div>
+                    <div class="opt-desc">${opt.desc}</div>
+                </button>
+            `).join('');
+
+            card.innerHTML = `
+                <div class="scenario-header">
+                    <div class="scenario-num">${currentQuestion + 1}</div>
+                    <div class="scenario-title">${scenario.title}</div>
+                </div>
+                <div class="scenario-context">
+                    <p>${scenario.context}</p>
+                    <p class="task-label">Task: ${scenario.task}</p>
+                </div>
+                <div class="options-grid">${optionsHTML}</div>
+                <div class="feedback" id="feedback"></div>
+                <div class="nav-btns">
+                    <button class="nav-btn" onclick="prevQuestion()" ${currentQuestion === 0 ? 'disabled' : ''}>Previous</button>
+                    <button class="nav-btn primary" onclick="submitOrNext()" id="submitBtn" disabled>Check Answer</button>
+                </div>
+            `;
+
+            // Update progress
+            document.getElementById('progressFill').style.width = `${(currentQuestion / scenarios.length) * 100}%`;
+            document.getElementById('progressText').textContent = `Question ${currentQuestion + 1} of ${scenarios.length}`;
+
+            selectedOption = null;
+            answered = false;
+
+            // Restore previous answer if exists
+            if (answers[currentQuestion] !== undefined) {
+                showPreviousAnswer();
+            }
+        }
+
+        function selectOption(index) {
+            if (answered) return;
+
+            // Clear previous selection
+            document.querySelectorAll('.option-btn').forEach(btn => btn.classList.remove('selected'));
+
+            // Select new
+            document.getElementById(`opt-${index}`).classList.add('selected');
+            selectedOption = index;
+            document.getElementById('submitBtn').disabled = false;
+        }
+
+        function submitOrNext() {
+            const btn = document.getElementById('submitBtn');
+
+            if (!answered) {
+                // Check name on first answer
+                if (answers.length === 0) {
+                    const playerName = document.getElementById('playerName').value.trim();
+                    if (!playerName) {
+                        alert('Please enter your name before starting the quiz!');
+                        return;
+                    }
+                }
+
+                // Submit answer
+                answered = true;
+                const scenario = scenarios[currentQuestion];
+                const correctIndex = scenario.options.findIndex(o => o.correct);
+                const isCorrect = selectedOption === correctIndex;
+
+                answers[currentQuestion] = { selected: selectedOption, correct: isCorrect };
+
+                // Show feedback
+                document.querySelectorAll('.option-btn').forEach((btn, i) => {
+                    if (i === correctIndex) btn.classList.add('correct');
+                    else if (i === selectedOption && !isCorrect) btn.classList.add('incorrect');
+                    btn.style.pointerEvents = 'none';
+                });
+
+                const feedback = document.getElementById('feedback');
+                feedback.className = `feedback show ${isCorrect ? 'correct-feedback' : 'incorrect-feedback'}`;
+                feedback.innerHTML = `
+                    <div class="feedback-title">${isCorrect ? 'Correct!' : 'Not quite'}</div>
+                    <p>${isCorrect ? scenario.explanation : scenario.wrongExplanation + '<br><br><strong>Correct answer:</strong> ' + scenario.explanation}</p>
+                `;
+
+                btn.textContent = currentQuestion === scenarios.length - 1 ? 'See Results' : 'Next';
+                btn.disabled = false;
+            } else {
+                // Go to next or show results
+                if (currentQuestion === scenarios.length - 1) {
+                    showResults();
+                } else {
+                    currentQuestion++;
+                    renderScenario();
+                }
+            }
+        }
+
+        function prevQuestion() {
+            if (currentQuestion > 0) {
+                currentQuestion--;
+                renderScenario();
+            }
+        }
+
+        function showPreviousAnswer() {
+            const prev = answers[currentQuestion];
+            const scenario = scenarios[currentQuestion];
+            const correctIndex = scenario.options.findIndex(o => o.correct);
+
+            answered = true;
+            selectedOption = prev.selected;
+
+            document.querySelectorAll('.option-btn').forEach((btn, i) => {
+                if (i === correctIndex) btn.classList.add('correct');
+                else if (i === prev.selected && !prev.correct) btn.classList.add('incorrect');
+                else if (i === prev.selected) btn.classList.add('selected');
+                btn.style.pointerEvents = 'none';
+            });
+
+            const feedback = document.getElementById('feedback');
+            feedback.className = `feedback show ${prev.correct ? 'correct-feedback' : 'incorrect-feedback'}`;
+            feedback.innerHTML = `
+                <div class="feedback-title">${prev.correct ? 'Correct!' : 'Not quite'}</div>
+                <p>${prev.correct ? scenario.explanation : scenario.wrongExplanation + '<br><br><strong>Correct answer:</strong> ' + scenario.explanation}</p>
+            `;
+
+            const btn = document.getElementById('submitBtn');
+            btn.textContent = currentQuestion === scenarios.length - 1 ? 'See Results' : 'Next';
+            btn.disabled = false;
+        }
+
+        function showResults() {
+            document.getElementById('scenarioCard').style.display = 'none';
+            document.querySelector('.progress-container').style.display = 'none';
+
+            const resultsCard = document.getElementById('resultsCard');
+            resultsCard.classList.add('show');
+
+            const correctCount = answers.filter(a => a.correct).length;
+            document.getElementById('resultsScore').textContent = `${correctCount}/${scenarios.length}`;
+
+            let breakdownHTML = scenarios.map((s, i) => {
+                const correctOpt = s.options.find(o => o.correct);
+                const wasCorrect = answers[i]?.correct;
+                return `
+                    <div class="breakdown-item ${wasCorrect ? 'was-correct' : 'was-incorrect'}">
+                        <div class="q-num">Q${i+1}: ${s.title}</div>
+                        <div class="q-answer">${wasCorrect ? 'Correct' : 'Incorrect'} ${correctOpt.name}</div>
+                    </div>
+                `;
+            }).join('');
+
+            document.getElementById('resultsBreakdown').innerHTML = breakdownHTML;
+            document.getElementById('progressFill').style.width = '100%';
+
+            // Submit score to server
+            const playerName = document.getElementById('playerName').value.trim();
+            fetch('/submit_score', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    name: playerName,
+                    quiz: 'quiz3',
+                    score: correctCount,
+                    total: scenarios.length
+                })
+            });
+        }
+
+        function restartQuiz() {
+            currentQuestion = 0;
+            answers = [];
+            selectedOption = null;
+            answered = false;
+
+            document.getElementById('scenarioCard').style.display = 'block';
+            document.querySelector('.progress-container').style.display = 'block';
+            document.getElementById('resultsCard').classList.remove('show');
+
+            renderScenario();
+        }
+
+        // Initialize
+        renderScenario();
+    </script>
+</body>
+</html>

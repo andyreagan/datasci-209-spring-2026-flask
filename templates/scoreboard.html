@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quiz Scoreboard</title>
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-dark: #0f0f1a;
+            --bg-card: #1a1a2e;
+            --bg-card-alt: #222240;
+            --accent-coral: #ff6b6b;
+            --accent-teal: #4ecdc4;
+            --accent-gold: #ffe66d;
+            --accent-purple: #a855f7;
+            --accent-blue: #60a5fa;
+            --text-primary: #f0f0f5;
+            --text-secondary: #9999aa;
+            --text-muted: #666677;
+            --border: #333355;
+            --correct: #22c55e;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'IBM Plex Sans', sans-serif;
+            background: var(--bg-dark);
+            color: var(--text-primary);
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 2rem;
+            padding-bottom: 1.5rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        h1 {
+            font-size: 2.3rem;
+            font-weight: 700;
+            margin-bottom: 0.4rem;
+            background: linear-gradient(135deg, var(--accent-gold), var(--accent-coral));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .subtitle { color: var(--text-secondary); font-size: 1rem; }
+
+        .scoreboard-section {
+            background: var(--bg-card);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            border: 1px solid var(--border);
+        }
+
+        .scoreboard-section h2 {
+            font-size: 1.2rem;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .scoreboard-section h2.quiz1 { color: var(--accent-purple); }
+        .scoreboard-section h2.quiz2 { color: var(--accent-teal); }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            padding: 0.75rem 1rem;
+            text-align: left;
+            border-bottom: 1px solid var(--border);
+        }
+
+        th {
+            background: var(--bg-card-alt);
+            font-weight: 600;
+            color: var(--text-secondary);
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        tr:hover {
+            background: var(--bg-card-alt);
+        }
+
+        .rank {
+            font-weight: 700;
+            color: var(--accent-gold);
+            font-family: 'IBM Plex Mono', monospace;
+        }
+
+        .rank.top { color: var(--correct); }
+
+        .name { font-weight: 500; }
+
+        .score {
+            font-family: 'IBM Plex Mono', monospace;
+            font-weight: 600;
+        }
+
+        .score .correct { color: var(--correct); }
+        .score .total { color: var(--text-muted); }
+
+        .timestamp {
+            color: var(--text-muted);
+            font-size: 0.85rem;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 2rem;
+            color: var(--text-muted);
+        }
+
+        .nav-links {
+            margin-top: 2rem;
+            text-align: center;
+        }
+
+        .nav-links a {
+            display: inline-block;
+            background: linear-gradient(135deg, var(--accent-purple), var(--accent-coral));
+            color: white;
+            text-decoration: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            margin: 0.5rem;
+            font-weight: 600;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .nav-links a:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(168, 85, 247, 0.3);
+        }
+
+        .nav-links a.quiz2-link {
+            background: linear-gradient(135deg, var(--accent-teal), var(--accent-blue));
+        }
+
+        .nav-links a.quiz2-link:hover {
+            box-shadow: 0 8px 20px rgba(78, 205, 196, 0.3);
+        }
+
+        .nav-links a.quiz3-link {
+            background: linear-gradient(135deg, #ff8906, #e53170);
+        }
+
+        .nav-links a.quiz3-link:hover {
+            box-shadow: 0 8px 20px rgba(255, 137, 6, 0.3);
+        }
+
+        footer {
+            text-align: center;
+            padding: 2rem;
+            color: var(--text-muted);
+            font-size: 0.8rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Quiz Scoreboard</h1>
+            <p class="subtitle">All quiz scores</p>
+        </header>
+
+        <div class="scoreboard-section">
+            <h2 class="quiz1" style="justify-content: center;">Scores are posted to Slack!</h2>
+            <div class="empty-state">
+                When you complete a quiz, your score is automatically posted to the class Slack channel.
+            </div>
+        </div>
+
+        <div class="nav-links">
+            <a href="/quiz1">Take Quiz 1</a>
+            <a href="/quiz2" class="quiz2-link">Take Quiz 2</a>
+            <a href="/quiz3" class="quiz3-link">Take Quiz 3</a>
+        </div>
+
+        <footer>W209 Information Visualization - UC Berkeley MIDS</footer>
+    </div>
+</body>
+</html>

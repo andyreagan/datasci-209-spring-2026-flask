@@ -1,0 +1,536 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quiz 1: Idiom Matchmaker</title>
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-dark: #0f0f1a;
+            --bg-card: #1a1a2e;
+            --bg-card-alt: #222240;
+            --accent-coral: #ff6b6b;
+            --accent-teal: #4ecdc4;
+            --accent-gold: #ffe66d;
+            --accent-purple: #a855f7;
+            --accent-blue: #60a5fa;
+            --text-primary: #f0f0f5;
+            --text-secondary: #9999aa;
+            --text-muted: #666677;
+            --border: #333355;
+            --correct: #22c55e;
+            --incorrect: #ef4444;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'IBM Plex Sans', sans-serif;
+            background: var(--bg-dark);
+            color: var(--text-primary);
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1300px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 2rem;
+            padding-bottom: 1.5rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        h1 {
+            font-size: 2.3rem;
+            font-weight: 700;
+            margin-bottom: 0.4rem;
+            background: linear-gradient(135deg, var(--accent-coral), var(--accent-gold));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .subtitle { color: var(--text-secondary); font-size: 1rem; }
+
+        .framework-ref {
+            background: var(--bg-card);
+            border-radius: 12px;
+            padding: 1.25rem;
+            margin-bottom: 2rem;
+            border: 1px solid var(--border);
+        }
+
+        .framework-ref h3 {
+            font-size: 0.85rem;
+            color: var(--accent-gold);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 0.75rem;
+        }
+
+        .framework-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+        }
+
+        .framework-item {
+            background: var(--bg-card-alt);
+            padding: 0.75rem 1rem;
+            border-radius: 8px;
+            font-size: 0.85rem;
+        }
+
+        .framework-item strong {
+            color: var(--accent-teal);
+            font-family: 'IBM Plex Mono', monospace;
+        }
+
+        .name-input-section {
+            background: var(--bg-card);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            border: 2px solid var(--accent-purple);
+        }
+
+        .name-input-section label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: var(--accent-purple);
+        }
+
+        .name-input-section input {
+            width: 100%;
+            max-width: 400px;
+            padding: 0.75rem 1rem;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+            background: var(--bg-card-alt);
+            color: var(--text-primary);
+            font-family: inherit;
+            font-size: 1rem;
+        }
+
+        .name-input-section input:focus {
+            outline: none;
+            border-color: var(--accent-purple);
+        }
+
+        .quiz-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+            gap: 1.25rem;
+        }
+
+        .quiz-card {
+            background: var(--bg-card);
+            border-radius: 12px;
+            padding: 1.25rem;
+            border: 2px solid var(--border);
+            transition: all 0.3s ease;
+        }
+
+        .quiz-card.correct {
+            border-color: var(--correct);
+            background: rgba(34, 197, 94, 0.08);
+        }
+
+        .quiz-card.incorrect {
+            border-color: var(--incorrect);
+            background: rgba(239, 68, 68, 0.08);
+        }
+
+        .quiz-scenario {
+            font-size: 0.9rem;
+            margin-bottom: 1rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .quiz-scenario .data-tag {
+            display: inline-block;
+            background: rgba(78, 205, 196, 0.15);
+            color: var(--accent-teal);
+            padding: 0.15rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-family: 'IBM Plex Mono', monospace;
+            margin: 0.25rem 0.25rem 0.25rem 0;
+        }
+
+        .quiz-scenario .task-tag {
+            display: inline-block;
+            background: rgba(255, 107, 107, 0.15);
+            color: var(--accent-coral);
+            padding: 0.15rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-family: 'IBM Plex Mono', monospace;
+            margin: 0.25rem 0.25rem 0.25rem 0;
+        }
+
+        .quiz-options {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0.5rem;
+        }
+
+        .quiz-option {
+            background: var(--bg-card-alt);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 0.6rem 0.8rem;
+            cursor: pointer;
+            font-size: 0.82rem;
+            transition: all 0.2s;
+            text-align: center;
+        }
+
+        .quiz-option:hover {
+            border-color: var(--accent-purple);
+            background: rgba(168, 85, 247, 0.1);
+        }
+
+        .quiz-option.selected {
+            border-color: var(--accent-purple);
+            background: rgba(168, 85, 247, 0.2);
+        }
+
+        .quiz-option.correct-answer {
+            border-color: var(--correct);
+            background: rgba(34, 197, 94, 0.2);
+        }
+
+        .quiz-option.wrong-answer {
+            border-color: var(--incorrect);
+            background: rgba(239, 68, 68, 0.2);
+            text-decoration: line-through;
+            opacity: 0.6;
+        }
+
+        .quiz-feedback {
+            margin-top: 0.75rem;
+            padding: 0.6rem 0.8rem;
+            border-radius: 6px;
+            font-size: 0.8rem;
+            display: none;
+        }
+
+        .quiz-feedback.visible { display: block; }
+
+        .quiz-feedback.correct-feedback {
+            background: rgba(34, 197, 94, 0.15);
+            color: var(--correct);
+        }
+
+        .quiz-feedback.incorrect-feedback {
+            background: rgba(239, 68, 68, 0.15);
+            color: var(--incorrect);
+        }
+
+        .score-bar {
+            background: var(--bg-card);
+            border-radius: 12px;
+            padding: 1rem 1.5rem;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border: 1px solid var(--border);
+        }
+
+        .score-label {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+        }
+
+        .score-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            font-family: 'IBM Plex Mono', monospace;
+        }
+
+        .score-value .correct-count { color: var(--correct); }
+        .score-value .total-count { color: var(--text-muted); }
+
+        .check-btn {
+            background: linear-gradient(135deg, var(--accent-purple), var(--accent-coral));
+            color: white;
+            border: none;
+            padding: 0.75rem 2rem;
+            border-radius: 8px;
+            font-family: inherit;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .check-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(168, 85, 247, 0.3);
+        }
+
+        .check-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .reset-btn {
+            background: transparent;
+            color: var(--text-secondary);
+            border: 1px solid var(--border);
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            font-family: inherit;
+            font-size: 0.85rem;
+            cursor: pointer;
+            margin-left: 1rem;
+        }
+
+        .reset-btn:hover {
+            border-color: var(--text-secondary);
+            color: var(--text-primary);
+        }
+
+        .nav-links {
+            margin-top: 2rem;
+            text-align: center;
+        }
+
+        .nav-links a {
+            color: var(--accent-teal);
+            text-decoration: none;
+            margin: 0 1rem;
+        }
+
+        .nav-links a:hover {
+            text-decoration: underline;
+        }
+
+        footer {
+            text-align: center;
+            padding: 2rem;
+            color: var(--text-muted);
+            font-size: 0.8rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Quiz 1: Idiom Matchmaker</h1>
+            <p class="subtitle">Match the data & task to the right chart type</p>
+        </header>
+
+        <div class="framework-ref">
+            <h3>Quick Reference: Keys & Values Framework</h3>
+            <div class="framework-grid">
+                <div class="framework-item">
+                    <strong>0 Keys</strong> - Scatterplot<br>
+                    <span style="color:var(--text-muted)">Two quantitative values</span>
+                </div>
+                <div class="framework-item">
+                    <strong>1 Key, 1 Value</strong> - Bar Chart<br>
+                    <span style="color:var(--text-muted)">One categorical, one quantitative</span>
+                </div>
+                <div class="framework-item">
+                    <strong>1 Key, 1 Value (cyclic)</strong> - Radial/Pie<br>
+                    <span style="color:var(--text-muted)">Part-to-whole or cyclic patterns</span>
+                </div>
+                <div class="framework-item">
+                    <strong>2 Keys, 1 Value</strong> - Heatmap<br>
+                    <span style="color:var(--text-muted)">Two categorical, one quantitative</span>
+                </div>
+                <div class="framework-item">
+                    <strong>Many Values</strong> - Parallel Coords / SPLOM<br>
+                    <span style="color:var(--text-muted)">Many quantitative attributes</span>
+                </div>
+                <div class="framework-item">
+                    <strong>Stacked</strong> - Part-to-whole<br>
+                    <span style="color:var(--text-muted)">Compare composition across groups</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="name-input-section">
+            <label for="playerName">Enter Your Name:</label>
+            <input type="text" id="playerName" placeholder="Your name..." required>
+        </div>
+
+        <div class="score-bar">
+            <div>
+                <span class="score-label">Score</span>
+                <div class="score-value">
+                    <span class="correct-count" id="correctCount">0</span>
+                    <span class="total-count">/ 6</span>
+                </div>
+            </div>
+            <div>
+                <button class="check-btn" id="checkBtn" onclick="checkAnswers()">Check Answers</button>
+                <button class="reset-btn" onclick="resetQuiz()">Reset</button>
+            </div>
+        </div>
+
+        <div class="quiz-grid" id="quizGrid"></div>
+
+        <div class="nav-links">
+            <a href="/quiz2">Quiz 2: Chart Decoder</a>
+            <a href="/quiz3">Quiz 3: Temporal Idiom</a>
+            <a href="/scoreboard">View Scoreboard</a>
+        </div>
+
+        <footer>W209 Information Visualization - UC Berkeley MIDS</footer>
+    </div>
+
+    <script>
+        const quizData = [
+            {
+                scenario: "A marketing analyst has <strong>customer age</strong> and <strong>annual spending</strong> for 500 customers. They want to see if older customers spend more.",
+                tags: { data: ["Quantitative", "Quantitative"], task: "Correlation" },
+                options: ["Scatterplot", "Bar Chart", "Heatmap", "Pie Chart"],
+                correct: 0,
+                explanation: "Two quantitative attributes with no categorical key = 0 keys = scatterplot. Perfect for finding correlation."
+            },
+            {
+                scenario: "A product manager has <strong>revenue by product category</strong> for Q4. They need to compare which categories performed best.",
+                tags: { data: ["Categorical", "Quantitative"], task: "Compare" },
+                options: ["Scatterplot", "Bar Chart", "Parallel Coordinates", "Heatmap"],
+                correct: 1,
+                explanation: "One categorical key (category) + one quantitative value (revenue) = bar chart. The classic 1-key, 1-value idiom."
+            },
+            {
+                scenario: "A data scientist has <strong>gene expression levels</strong> for 200 genes across 50 experimental conditions. They want to find clusters of genes with similar patterns.",
+                tags: { data: ["Categorical", "Categorical", "Quantitative"], task: "Cluster" },
+                options: ["Scatterplot", "Stacked Bar Chart", "Heatmap", "Pie Chart"],
+                correct: 2,
+                explanation: "Two categorical keys (gene x condition) + one quantitative value (expression) = heatmap. Can show 1M+ cells with color encoding."
+            },
+            {
+                scenario: "An HR analyst wants to show how the <strong>department budget</strong> breaks down by spending category: salaries, equipment, travel, training.",
+                tags: { data: ["Categorical", "Quantitative"], task: "Part-to-whole" },
+                options: ["Scatterplot", "Grouped Bar Chart", "Parallel Coordinates", "Stacked Bar / Pie"],
+                correct: 3,
+                explanation: "Part-to-whole task with few categories - pie chart or normalized stacked bar. Both emphasize proportions of a whole."
+            },
+            {
+                scenario: "A car researcher has data on 400 vehicles with attributes: <strong>horsepower, weight, MPG, acceleration, cylinders, and origin</strong>. They want to explore relationships across all attributes.",
+                tags: { data: ["Many Quantitative"], task: "Explore" },
+                options: ["Bar Chart", "Scatterplot", "Parallel Coordinates / SPLOM", "Heatmap"],
+                correct: 2,
+                explanation: "Many quantitative attributes = parallel coordinates or scatterplot matrix (SPLOM). Both handle high dimensionality."
+            },
+            {
+                scenario: "A retail analyst has <strong>sales by region</strong> broken down by <strong>quarter</strong>. They want to compare how each region performed across Q1-Q4.",
+                tags: { data: ["Categorical", "Categorical", "Quantitative"], task: "Compare" },
+                options: ["Scatterplot", "Grouped/Stacked Bar Chart", "Pie Chart", "Parallel Coordinates"],
+                correct: 1,
+                explanation: "Two categorical keys (region x quarter) + one value (sales) = grouped or stacked bar chart. Grouped bars make within-region comparison easier."
+            }
+        ];
+
+        let selectedAnswers = new Array(quizData.length).fill(null);
+        let quizChecked = false;
+
+        function renderQuiz() {
+            const grid = document.getElementById('quizGrid');
+            grid.innerHTML = quizData.map((q, i) => `
+                <div class="quiz-card" id="card-${i}">
+                    <div class="quiz-scenario">
+                        ${q.scenario}
+                        <div style="margin-top:0.5rem;">
+                            ${q.tags.data.map(d => `<span class="data-tag">${d}</span>`).join('')}
+                            <span class="task-tag">${q.tags.task}</span>
+                        </div>
+                    </div>
+                    <div class="quiz-options">
+                        ${q.options.map((opt, j) => `
+                            <div class="quiz-option" id="opt-${i}-${j}" onclick="selectOption(${i}, ${j})">${opt}</div>
+                        `).join('')}
+                    </div>
+                    <div class="quiz-feedback" id="feedback-${i}"></div>
+                </div>
+            `).join('');
+        }
+
+        function selectOption(questionIdx, optionIdx) {
+            if (quizChecked) return;
+
+            quizData[questionIdx].options.forEach((_, j) => {
+                document.getElementById(`opt-${questionIdx}-${j}`).classList.remove('selected');
+            });
+
+            document.getElementById(`opt-${questionIdx}-${optionIdx}`).classList.add('selected');
+            selectedAnswers[questionIdx] = optionIdx;
+        }
+
+        function checkAnswers() {
+            const playerName = document.getElementById('playerName').value.trim();
+            if (!playerName) {
+                alert('Please enter your name before checking answers!');
+                return;
+            }
+
+            if (quizChecked) return;
+            quizChecked = true;
+
+            let correctCount = 0;
+
+            quizData.forEach((q, i) => {
+                const card = document.getElementById(`card-${i}`);
+                const feedback = document.getElementById(`feedback-${i}`);
+                const selected = selectedAnswers[i];
+
+                document.getElementById(`opt-${i}-${q.correct}`).classList.add('correct-answer');
+
+                if (selected === q.correct) {
+                    correctCount++;
+                    card.classList.add('correct');
+                    feedback.className = 'quiz-feedback visible correct-feedback';
+                    feedback.innerHTML = `Correct! ${q.explanation}`;
+                } else {
+                    card.classList.add('incorrect');
+                    feedback.className = 'quiz-feedback visible incorrect-feedback';
+                    feedback.innerHTML = `${q.explanation}`;
+                    if (selected !== null) {
+                        document.getElementById(`opt-${i}-${selected}`).classList.add('wrong-answer');
+                    }
+                }
+            });
+
+            document.getElementById('correctCount').textContent = correctCount;
+            document.getElementById('checkBtn').disabled = true;
+
+            // Submit score to server
+            fetch('/submit_score', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    name: playerName,
+                    quiz: 'quiz1',
+                    score: correctCount,
+                    total: 6
+                })
+            });
+        }
+
+        function resetQuiz() {
+            quizChecked = false;
+            selectedAnswers = new Array(quizData.length).fill(null);
+            document.getElementById('correctCount').textContent = '0';
+            document.getElementById('checkBtn').disabled = false;
+            renderQuiz();
+        }
+
+        renderQuiz();
+    </script>
+</body>
+</html>

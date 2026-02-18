@@ -1,0 +1,598 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quiz 2: Chart Decoder Challenge</title>
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root {
+            --bg-dark: #0f0f1a;
+            --bg-card: #1a1a2e;
+            --bg-card-alt: #222240;
+            --accent-coral: #ff6b6b;
+            --accent-teal: #4ecdc4;
+            --accent-gold: #ffe66d;
+            --accent-purple: #a855f7;
+            --accent-blue: #60a5fa;
+            --text-primary: #f0f0f5;
+            --text-secondary: #9999aa;
+            --text-muted: #666677;
+            --border: #333355;
+            --correct: #22c55e;
+            --incorrect: #ef4444;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'IBM Plex Sans', sans-serif;
+            background: var(--bg-dark);
+            color: var(--text-primary);
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1300px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 2rem;
+            padding-bottom: 1.5rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        h1 {
+            font-size: 2.3rem;
+            font-weight: 700;
+            margin-bottom: 0.4rem;
+            background: linear-gradient(135deg, var(--accent-teal), var(--accent-blue));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .subtitle { color: var(--text-secondary); font-size: 1rem; }
+
+        .name-input-section {
+            background: var(--bg-card);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            border: 2px solid var(--accent-teal);
+        }
+
+        .name-input-section label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: var(--accent-teal);
+        }
+
+        .name-input-section input {
+            width: 100%;
+            max-width: 400px;
+            padding: 0.75rem 1rem;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+            background: var(--bg-card-alt);
+            color: var(--text-primary);
+            font-family: inherit;
+            font-size: 1rem;
+        }
+
+        .name-input-section input:focus {
+            outline: none;
+            border-color: var(--accent-teal);
+        }
+
+        .score-bar {
+            background: var(--bg-card);
+            border-radius: 12px;
+            padding: 1rem 1.5rem;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border: 1px solid var(--border);
+        }
+
+        .score-label {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+        }
+
+        .score-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            font-family: 'IBM Plex Mono', monospace;
+        }
+
+        .score-value .correct-count { color: var(--correct); }
+        .score-value .total-count { color: var(--text-muted); }
+
+        .decoder-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        @media (max-width: 900px) {
+            .decoder-container { grid-template-columns: 1fr; }
+        }
+
+        .decoder-chart {
+            background: var(--bg-card);
+            border-radius: 12px;
+            padding: 1.5rem;
+            border: 1px solid var(--border);
+        }
+
+        .decoder-chart h4 {
+            font-size: 1rem;
+            margin-bottom: 1rem;
+            color: var(--accent-teal);
+        }
+
+        .chart-wrapper {
+            background: #fff;
+            border-radius: 8px;
+            padding: 1rem;
+            min-height: 280px;
+        }
+
+        .decoder-questions {
+            background: var(--bg-card);
+            border-radius: 12px;
+            padding: 1.5rem;
+            border: 1px solid var(--border);
+        }
+
+        .decoder-questions h4 {
+            font-size: 1rem;
+            margin-bottom: 1rem;
+            color: var(--accent-coral);
+        }
+
+        .decoder-form {
+            display: grid;
+            gap: 1rem;
+        }
+
+        .decoder-field label {
+            display: block;
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            margin-bottom: 0.35rem;
+        }
+
+        .decoder-field select {
+            width: 100%;
+            padding: 0.6rem 0.8rem;
+            border-radius: 6px;
+            border: 1px solid var(--border);
+            background: var(--bg-card-alt);
+            color: var(--text-primary);
+            font-family: inherit;
+            font-size: 0.85rem;
+        }
+
+        .decoder-field select:focus {
+            outline: none;
+            border-color: var(--accent-purple);
+        }
+
+        .decoder-field select.correct {
+            border-color: var(--correct);
+            background: rgba(34, 197, 94, 0.1);
+        }
+
+        .decoder-field select.incorrect {
+            border-color: var(--incorrect);
+            background: rgba(239, 68, 68, 0.1);
+        }
+
+        .decoder-answer {
+            background: var(--bg-card-alt);
+            border-radius: 8px;
+            padding: 1rem;
+            margin-top: 1rem;
+            display: none;
+            font-size: 0.85rem;
+        }
+
+        .decoder-answer.visible { display: block; }
+
+        .decoder-answer h5 {
+            color: var(--accent-gold);
+            margin-bottom: 0.5rem;
+        }
+
+        .answer-item {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 0.35rem;
+        }
+
+        .answer-label {
+            color: var(--text-muted);
+            min-width: 80px;
+        }
+
+        .answer-value {
+            color: var(--text-primary);
+            font-family: 'IBM Plex Mono', monospace;
+        }
+
+        .check-btn {
+            background: linear-gradient(135deg, var(--accent-teal), var(--accent-blue));
+            color: white;
+            border: none;
+            padding: 0.75rem 2rem;
+            border-radius: 8px;
+            font-family: inherit;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .check-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(78, 205, 196, 0.3);
+        }
+
+        .check-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .reset-btn {
+            background: transparent;
+            color: var(--text-secondary);
+            border: 1px solid var(--border);
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            font-family: inherit;
+            font-size: 0.85rem;
+            cursor: pointer;
+            margin-left: 1rem;
+        }
+
+        .reset-btn:hover {
+            border-color: var(--text-secondary);
+            color: var(--text-primary);
+        }
+
+        .nav-links {
+            margin-top: 2rem;
+            text-align: center;
+        }
+
+        .nav-links a {
+            color: var(--accent-coral);
+            text-decoration: none;
+            margin: 0 1rem;
+        }
+
+        .nav-links a:hover {
+            text-decoration: underline;
+        }
+
+        footer {
+            text-align: center;
+            padding: 2rem;
+            color: var(--text-muted);
+            font-size: 0.8rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Quiz 2: Chart Decoder Challenge</h1>
+            <p class="subtitle">Look at each chart and identify its components using Munzner's vocabulary</p>
+        </header>
+
+        <div class="name-input-section">
+            <label for="playerName">Enter Your Name:</label>
+            <input type="text" id="playerName" placeholder="Your name..." required>
+        </div>
+
+        <div class="score-bar">
+            <div>
+                <span class="score-label">Score</span>
+                <div class="score-value">
+                    <span class="correct-count" id="correctCount">0</span>
+                    <span class="total-count">/ 8</span>
+                </div>
+            </div>
+            <div>
+                <button class="check-btn" id="checkBtn" onclick="checkAllAnswers()">Check Answers</button>
+                <button class="reset-btn" onclick="resetQuiz()">Reset</button>
+            </div>
+        </div>
+
+        <!-- Chart A -->
+        <div class="decoder-container">
+            <div class="decoder-chart">
+                <h4>Chart A</h4>
+                <div class="chart-wrapper">
+                    <canvas id="decoderChartA"></canvas>
+                </div>
+            </div>
+            <div class="decoder-questions">
+                <h4>Decode Chart A</h4>
+                <div class="decoder-form">
+                    <div class="decoder-field">
+                        <label>How many keys?</label>
+                        <select id="chartA_keys">
+                            <option value="">Select...</option>
+                            <option value="0">0 keys</option>
+                            <option value="1">1 key</option>
+                            <option value="2">2 keys</option>
+                            <option value="many">Many keys</option>
+                        </select>
+                    </div>
+                    <div class="decoder-field">
+                        <label>Mark type?</label>
+                        <select id="chartA_mark">
+                            <option value="">Select...</option>
+                            <option value="point">Points</option>
+                            <option value="line">Lines</option>
+                            <option value="area">Areas</option>
+                            <option value="bar">Bars (rectangles)</option>
+                        </select>
+                    </div>
+                    <div class="decoder-field">
+                        <label>Primary channel for quantitative value?</label>
+                        <select id="chartA_channel">
+                            <option value="">Select...</option>
+                            <option value="position_x">Horizontal position</option>
+                            <option value="position_y">Vertical position</option>
+                            <option value="length">Length</option>
+                            <option value="angle">Angle</option>
+                            <option value="color">Color</option>
+                        </select>
+                    </div>
+                    <div class="decoder-field">
+                        <label>What task is this good for?</label>
+                        <select id="chartA_task">
+                            <option value="">Select...</option>
+                            <option value="compare">Compare values</option>
+                            <option value="correlation">Find correlation</option>
+                            <option value="distribution">Show distribution</option>
+                            <option value="part_whole">Part-to-whole</option>
+                        </select>
+                    </div>
+                    <div class="decoder-answer" id="decoderAnswerA">
+                        <h5>Chart A: Grouped Bar Chart</h5>
+                        <div class="answer-item"><span class="answer-label">Keys:</span><span class="answer-value">2 keys (Region = outer, Quarter = inner)</span></div>
+                        <div class="answer-item"><span class="answer-label">Values:</span><span class="answer-value">1 value (Sales)</span></div>
+                        <div class="answer-item"><span class="answer-label">Mark:</span><span class="answer-value">Bars (line marks with length)</span></div>
+                        <div class="answer-item"><span class="answer-label">Channels:</span><span class="answer-value">Length - Sales; Position - Region; Hue - Quarter</span></div>
+                        <div class="answer-item"><span class="answer-label">Task:</span><span class="answer-value">Compare values across categories</span></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Chart B -->
+        <div class="decoder-container">
+            <div class="decoder-chart">
+                <h4>Chart B</h4>
+                <div class="chart-wrapper">
+                    <canvas id="decoderChartB"></canvas>
+                </div>
+            </div>
+            <div class="decoder-questions">
+                <h4>Decode Chart B</h4>
+                <div class="decoder-form">
+                    <div class="decoder-field">
+                        <label>How many keys?</label>
+                        <select id="chartB_keys">
+                            <option value="">Select...</option>
+                            <option value="0">0 keys</option>
+                            <option value="1">1 key</option>
+                            <option value="2">2 keys</option>
+                            <option value="many">Many keys</option>
+                        </select>
+                    </div>
+                    <div class="decoder-field">
+                        <label>Mark type?</label>
+                        <select id="chartB_mark">
+                            <option value="">Select...</option>
+                            <option value="point">Points</option>
+                            <option value="line">Lines</option>
+                            <option value="area">Areas</option>
+                            <option value="bar">Bars (rectangles)</option>
+                        </select>
+                    </div>
+                    <div class="decoder-field">
+                        <label>What are the two position channels encoding?</label>
+                        <select id="chartB_encoding">
+                            <option value="">Select...</option>
+                            <option value="cat_cat">Two categorical attributes</option>
+                            <option value="quant_quant">Two quantitative attributes</option>
+                            <option value="cat_quant">One categorical, one quantitative</option>
+                        </select>
+                    </div>
+                    <div class="decoder-field">
+                        <label>What task is this good for?</label>
+                        <select id="chartB_task">
+                            <option value="">Select...</option>
+                            <option value="compare">Compare values</option>
+                            <option value="correlation">Find correlation / clusters</option>
+                            <option value="distribution">Show distribution</option>
+                            <option value="part_whole">Part-to-whole</option>
+                        </select>
+                    </div>
+                    <div class="decoder-answer" id="decoderAnswerB">
+                        <h5>Chart B: Scatterplot</h5>
+                        <div class="answer-item"><span class="answer-label">Keys:</span><span class="answer-value">0 keys - this is the defining feature!</span></div>
+                        <div class="answer-item"><span class="answer-label">Values:</span><span class="answer-value">2 quantitative values (+ optional 3rd via size)</span></div>
+                        <div class="answer-item"><span class="answer-label">Mark:</span><span class="answer-value">Points</span></div>
+                        <div class="answer-item"><span class="answer-label">Channels:</span><span class="answer-value">X position - Value 1; Y position - Value 2</span></div>
+                        <div class="answer-item"><span class="answer-label">Task:</span><span class="answer-value">Find correlation, clusters, outliers, trends</span></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="nav-links">
+            <a href="/quiz1">Quiz 1: Idiom Matchmaker</a>
+            <a href="/quiz3">Quiz 3: Temporal Idiom</a>
+            <a href="/scoreboard">View Scoreboard</a>
+        </div>
+
+        <footer>W209 Information Visualization - UC Berkeley MIDS</footer>
+    </div>
+
+    <script>
+        // Correct answers
+        const correctAnswers = {
+            chartA_keys: '2',
+            chartA_mark: 'bar',
+            chartA_channel: 'length',
+            chartA_task: 'compare',
+            chartB_keys: '0',
+            chartB_mark: 'point',
+            chartB_encoding: 'quant_quant',
+            chartB_task: 'correlation'
+        };
+
+        let quizChecked = false;
+
+        function renderDecoderCharts() {
+            // Chart A: Grouped Bar Chart
+            const ctxA = document.getElementById('decoderChartA').getContext('2d');
+            new Chart(ctxA, {
+                type: 'bar',
+                data: {
+                    labels: ['North', 'South', 'East', 'West'],
+                    datasets: [
+                        { label: 'Q1', data: [42, 35, 48, 31], backgroundColor: 'rgba(255, 107, 107, 0.8)' },
+                        { label: 'Q2', data: [48, 38, 52, 37], backgroundColor: 'rgba(78, 205, 196, 0.8)' },
+                        { label: 'Q3', data: [45, 42, 49, 40], backgroundColor: 'rgba(255, 230, 109, 0.8)' },
+                        { label: 'Q4', data: [52, 45, 58, 43], backgroundColor: 'rgba(168, 85, 247, 0.8)' }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { position: 'bottom', labels: { font: { size: 10 } } },
+                        title: { display: true, text: 'Sales by Region and Quarter', font: { size: 12 } }
+                    },
+                    scales: {
+                        y: { beginAtZero: true, title: { display: true, text: 'Sales ($K)', font: { size: 10 } } }
+                    }
+                }
+            });
+
+            // Chart B: Scatterplot
+            const ctxB = document.getElementById('decoderChartB').getContext('2d');
+            const scatterData = [];
+            for (let i = 0; i < 50; i++) {
+                const x = 20 + Math.random() * 60;
+                const y = x * 0.8 + (Math.random() - 0.5) * 30 + 10;
+                const size = 5 + Math.random() * 15;
+                scatterData.push({ x, y, r: size });
+            }
+
+            new Chart(ctxB, {
+                type: 'bubble',
+                data: {
+                    datasets: [{
+                        label: 'Products',
+                        data: scatterData,
+                        backgroundColor: 'rgba(96, 165, 250, 0.6)',
+                        borderColor: 'rgba(96, 165, 250, 1)',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false },
+                        title: { display: true, text: 'Price vs. Rating (size = reviews)', font: { size: 12 } }
+                    },
+                    scales: {
+                        x: { title: { display: true, text: 'Price ($)', font: { size: 10 } }, min: 10, max: 90 },
+                        y: { title: { display: true, text: 'Rating (1-5)', font: { size: 10 } }, min: 0, max: 80 }
+                    }
+                }
+            });
+        }
+
+        function checkAllAnswers() {
+            const playerName = document.getElementById('playerName').value.trim();
+            if (!playerName) {
+                alert('Please enter your name before checking answers!');
+                return;
+            }
+
+            if (quizChecked) return;
+            quizChecked = true;
+
+            let correctCount = 0;
+
+            Object.keys(correctAnswers).forEach(id => {
+                const select = document.getElementById(id);
+                const userAnswer = select.value;
+                const correct = correctAnswers[id];
+
+                if (userAnswer === correct) {
+                    correctCount++;
+                    select.classList.add('correct');
+                } else {
+                    select.classList.add('incorrect');
+                }
+            });
+
+            document.getElementById('correctCount').textContent = correctCount;
+            document.getElementById('checkBtn').disabled = true;
+
+            // Show explanations
+            document.getElementById('decoderAnswerA').classList.add('visible');
+            document.getElementById('decoderAnswerB').classList.add('visible');
+
+            // Submit score to server
+            fetch('/submit_score', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    name: playerName,
+                    quiz: 'quiz2',
+                    score: correctCount,
+                    total: 8
+                })
+            });
+        }
+
+        function resetQuiz() {
+            quizChecked = false;
+            document.getElementById('correctCount').textContent = '0';
+            document.getElementById('checkBtn').disabled = false;
+
+            Object.keys(correctAnswers).forEach(id => {
+                const select = document.getElementById(id);
+                select.value = '';
+                select.classList.remove('correct', 'incorrect');
+            });
+
+            document.getElementById('decoderAnswerA').classList.remove('visible');
+            document.getElementById('decoderAnswerB').classList.remove('visible');
+        }
+
+        renderDecoderCharts();
+    </script>
+</body>
+</html>
